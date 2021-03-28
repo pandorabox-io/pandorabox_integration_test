@@ -4,6 +4,8 @@ globals = {
 }
 
 read_globals = {
+	"minetest",
+
 	-- Stdlib
 	string = {fields = {"split"}},
 	table = {fields = {"copy", "getn"}},
