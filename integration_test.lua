@@ -27,26 +27,23 @@ minetest.register_on_mods_loaded(function()
 	minetest.after(1, function()
 		minetest.log("warning", "[pandorabox_integration_test] starting integration test")
 
-		-- export stats
-		local file = io.open(minetest.get_worldpath().."/registered_nodes.txt", "w" );
-		if file then
-			for name in pairs(minetest.registered_nodes) do
-				file:write(name .. '\n')
-			end
-			file:close()
-		end
-
 		-- check nodes
+		local all_nodes_present = true
 		for _, nodename in ipairs(assert_nodes) do
 			if not minetest.registered_nodes[nodename] and not minetest.registered_aliases[nodename] then
-				error("Node not present and not aliased: " .. nodename)
+				all_nodes_present = false
+				minetest.log("error", "Node not present and not aliased: " .. nodename)
 			end
+		end
+
+		if not all_nodes_present then
+			error("some of the required nodes are not present and not aliased!")
 		end
 
 		test_mobs(function()
 			-- write success flag
 			local data = minetest.write_json({ success = true }, true);
-			file = io.open(minetest.get_worldpath().."/integration_test.json", "w" );
+			local file = io.open(minetest.get_worldpath().."/integration_test.json", "w" );
 			if file then
 				file:write(data)
 				file:close()
