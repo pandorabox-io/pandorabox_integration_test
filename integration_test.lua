@@ -27,12 +27,28 @@ minetest.register_on_mods_loaded(function()
 	minetest.after(1, function()
 		minetest.log("warning", "[pandorabox_integration_test] starting integration test")
 
+		-- assemble node-list from registered lbm's
+		local lbm_nodes = {}
+		for _, lbm in ipairs(minetest.registered_lbms) do
+			if type(lbm.nodenames) == "string" then
+				-- duh, list as string
+				lbm_nodes[lbm.nodenames] = true
+			else
+				-- proper list, add all regardless if they are a "group:*"
+				for _, nodename in ipairs(lbm.nodenames) do
+					lbm_nodes[nodename] = true
+				end
+			end
+		end
+
 		-- check nodes
 		local all_nodes_present = true
 		for _, nodename in ipairs(assert_nodes) do
-			if not minetest.registered_nodes[nodename] and not minetest.registered_aliases[nodename] then
-				all_nodes_present = false
-				minetest.log("error", "Node not present and not aliased: " .. nodename)
+			if not minetest.registered_nodes[nodename]
+				and not minetest.registered_aliases[nodename]
+				and not lbm_nodes[nodename] then
+					all_nodes_present = false
+					minetest.log("error", "Node not present and not available in an aliase/lbm: " .. nodename)
 			end
 		end
 
