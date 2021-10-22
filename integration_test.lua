@@ -48,7 +48,7 @@ minetest.register_on_mods_loaded(function()
 				and not minetest.registered_aliases[nodename]
 				and not lbm_nodes[nodename] then
 					all_nodes_present = false
-					minetest.log("error", "Node not present and not available in an aliase/lbm: " .. nodename)
+					minetest.log("error", "Node not present and not available in an alias/lbm: " .. nodename)
 			end
 		end
 
